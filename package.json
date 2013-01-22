@@ -17,15 +17,6 @@
   "bin":{
       "bobamo":"bin/bobamo"
   },
-  "devDependencies": {
-    "should": "latest",
-    "csv": "latest"
-  },
-  "scripts": {
-    "test": "mocha tests/*-mocha.js",
-    "example": "node example/app.js"
-  },
-  "optionalDependencies": {},
   "engines": {
     "node": "*"
   }
