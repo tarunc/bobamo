@@ -5,7 +5,7 @@
   "private": false,
   "dependencies": {
     "jqtpl": "~2.0.12",
-    "cons": "~0.7.0",
+    "consolidate": "~0.7.0",
     "mongoose": "~3.5.4",
     "mers": "~0.6.0",
     "underscore": "~1.4.3",
