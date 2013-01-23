@@ -26,7 +26,7 @@ define(['Backbone', 'jquery', 'underscore','text!tpl/header.html', 'libs/bootstr
     var HeaderView = Backbone.View.extend({
 
         initialize:function(){
-            this.headerdata = {{json appModel.header }}
+            this.headerdata = {{json appModel.header}};
 
         },
         itemTemplate:function renderItem(j){

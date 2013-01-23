@@ -286,14 +286,18 @@ MongoosePlugin.prototype.editorFor = function (path, p, Model) {
                         break;
                     default:
                     {
-                        var type = this.pluginManager.pluginFor(path,  p, schema);
-                        if (type == null)
-                          console.error('unknown type for [' + path + ']', p);
-
-                        else{
-                            console.log('found type', type);
-                            _u.extend(defaults, type);
-                        }
+                      
+                      defaults.schemaType = 'String';
+                        // var type = this.pluginManager.pluginFor(path,  p, schema);
+                        // if (type == null)
+                        //   console.error('unknown type for [' + path + ']', p);
+                        // 
+                        // else if (_u.isObject(type)){
+                        //   defaults.schemaType = 'String';
+                        // } else {
+                        //     console.log('found type', type);
+                        //     _u.extend(defaults, type);
+                        // }
                         break;
                     }
                 }
@@ -317,6 +321,9 @@ MongoosePlugin.prototype.editorFor = function (path, p, Model) {
                 } else if (v[1] == 'required') {
                     util.defaultOrSet(defaults, 'validators', []).push({ type:'required', message:v[1] });
 
+                } else if (v[1] == 'enum') {
+                    util.defaultOrSet(defaults, 'validators', []).push({ type:'enum', message:v[1], configure: {values:p.options.values} });
+                
                 } else if (p.instance == 'Number' || _u.isNumber(p.options.min)) {
                     if (v[1] == 'min') {
                        util.defaultOrSet(defaults, 'validators', []).push({ type:'min', message:v[1], configure:{min:p.options.max} });
@@ -328,7 +335,8 @@ MongoosePlugin.prototype.editorFor = function (path, p, Model) {
                     console.log('validator type', v[0].type, v[0]);
                     util.defaultOrSet(defaults, 'validators', []).push( v[0] );
 
-                }else{
+                }else {
+                  console.log('validator', v, k, v[0], v[1]);
                     console.warn('can only handle client side regex/required/min/max validators for now', v)
                 }
             }

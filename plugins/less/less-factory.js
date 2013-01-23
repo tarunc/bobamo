@@ -9,6 +9,10 @@ function CssFactory(options) {
         var readp = this.options.paths;
         var vars = {};
         readp.forEach(function (v, k) {
+          if (!fs.existsSync(v)) {
+            return;
+          }
+          
             this.readVariables(fs.readFileSync(path.join(v, 'variables.less'), 'utf-8').split('\n'), vars, v);
         }, this);
 
@@ -86,6 +90,7 @@ CssFactory.prototype.schemaFor = function (vars) {
             }
         }, this);
     }, this);
+    
     return schema;
 }
 /**

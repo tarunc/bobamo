@@ -215,9 +215,9 @@ var hasLength = function (str) {
 }
 PassportPlugin.prototype.routes = function () {
 
-    this.app.get(this.baseUrl + 'js/views/header.js', function (req, res, next) {
-        this.generate(res, 'header.js', {}, next);
-    }.bind(this));
+    // this.app.get(this.baseUrl + 'js/views/header.js', function (req, res, next) {
+    //     this.generate(res, 'header.js', {}, next);
+    // }.bind(this));
     this.app.post(this.pluginUrl + '/change_password', function (req, res, next) {
         var body = req.body;
         if (!req.user) {

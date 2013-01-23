@@ -39,15 +39,17 @@ GeneratorPlugin.prototype.filters = function (options) {
 var Items = function(appModel, pluginManager){
 
     this.__defineGetter__('title-bar', function onItemTitleBarGetter(){
+      console.log('titlebars');
         var items = {};
         var paths = appModel.modelPaths;
+        console.log(paths);
         _u.each(appModel.modelPaths, function (l,k){
+          console.log(l, k);
             var finders = l.finders && l.finders.length && l.finders;
             var id=['title-bar', k].join('_')
             var itm = items[k] = {
                 label:l.plural,
                 id:id
-
             }
 
             if (l.finders && l.finders.length){
@@ -66,8 +68,8 @@ var Items = function(appModel, pluginManager){
         return items;
     });
     this.__defineGetter__('user-menu', function(){
-
-        return
+      console.log('user menu')
+        return {};
     });
 
 }
