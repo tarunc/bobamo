@@ -1,26 +1,19 @@
-<div class="navbar navbar-fixed-top">
-    <div class="navbar-inner">
-        <div class="container">
-            <a class="brand" href="#">${appModel.title}</a>
 
-            <div class="nav-collapse mainnav">
-                <ul class="nav">
-                    <% _.each(['title-bar'], function(t){
-                    _.each(items[t], function(l){ %>
-                    <%= menu(l) %>
-                    <%})})%>
-
-                    <%if (items['admin-menu']&& _.keys(items['admin-menu']).length){%>
-                        <li class="divider-vertical"></li>
-                        <%=menu({items:items['admin-menu'],label:'Admin'})%>
-                    <%}%>
-                    <%if (items['user-menu'] && _.keys(items['user-menu']).length){%>
-                         <li class="divider-vertical"></li>
-                          <%=menu({items:items['user-menu'],label:'User'})%>
-                    <%}%>
-                </ul>
-            </div>
-
-        </div>
-    </div>
-</div>
+<ul class="nav nav-list">
+  <li class="nav-header"><a class="brand" href="#">${appModel.title}</a></li>
+  
+  <% _.each(['title-bar'], function(t){
+  _.each(items[t], function(l){ %>
+  <%= menu(l) %>
+  <%})})%>
+  
+  <%if (items['admin-menu']&& _.keys(items['admin-menu']).length){%>
+      <li class="divider-horizontal"></li>
+      <%=menu({items:items['admin-menu'],label:'Admin'})%>
+  <%}%>
+  
+  <%if (items['user-menu'] && _.keys(items['user-menu']).length){%>
+       <li class="divider-vertical"></li>
+        <%=menu({items:items['user-menu'],label:'User'})%>
+  <%}%>
+</ul>

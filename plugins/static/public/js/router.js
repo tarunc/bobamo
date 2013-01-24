@@ -107,7 +107,9 @@ define([
                 return fragment.replace(routeStripper, '');
             };
             var app_router = new AppRouter;
-            Backbone.history.start();
+            Backbone.history.start({
+              // pushState: true
+            });
         }
     };
 

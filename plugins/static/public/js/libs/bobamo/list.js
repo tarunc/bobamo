@@ -67,7 +67,8 @@ define([
         classNames:['span7'],
         events:{
             'paginate-change .pager_table':'doPage',
-            'sorter-change .sortable':'onSort'
+            'sorter-change .sortable':'onSort',
+            'click li.hide-show-field a': 'fieldListChange'
         },
         initialize:function () {
             if (!this.template) {
@@ -83,6 +84,13 @@ define([
             return this;
         },
         itemView:ListItemView,
+        fieldListChange: function (e) {
+          e.preventDefault();
+          
+          
+          
+          return false;
+        },
         renderItem:function (item) {
             var template = this.listItemTemplate;
             if (this.$ul) {

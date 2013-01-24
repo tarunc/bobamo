@@ -107,7 +107,7 @@ EditModel.prototype.schemaFor = function () {
         subSchema:{
 
             legend:{
-                title:'Legend fo the fieldset',
+                title:'Legend for the fieldset',
                 type:'Text'
             },
             fields:{

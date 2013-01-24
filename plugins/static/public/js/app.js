@@ -8,7 +8,7 @@ define([
 ], function ($, _, Backbone, Router, HeaderView) {
     return (function () {
         this.headerView = new HeaderView();
-        $('.header').html(this.headerView.render().el);
+        $('#sidebar-nav').html(this.headerView.render().el);
 
         // Close the search dropdown on click anywhere in the UI
         $('body').click(function () {
