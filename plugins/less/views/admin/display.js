@@ -1,6 +1,6 @@
 define(['underscore', 'jquery', 'Backbone', 'libs/bobamo/edit', 'text!${pluginUrl}/templates/admin/display.html',  'libs/editors/unit-editor', 'libs/editors/color-editor', 'libs/editors/placeholder-editor'], function (_, $, Backbone, EditView, template) {
 
-    var fieldsets = {{json lessFactory.fieldsets()}};
+    var fieldsets = {{json lessFactory.fieldsets() }};
     var schema = {{json lessFactory.schemaFor()}};
     var id = '${lessFactory.checksum}';
     var Model = Backbone.Model.extend({

@@ -23,7 +23,7 @@ define([
         initialize:function (options) {
             this.model.bind("change", this.render, this);
             this.model.bind("destroy", this.close, this);
-
+            this.sort = [];
       //      _.bind(this.format, this);
             return this;
         },
@@ -109,7 +109,7 @@ define([
             this.trigger('fetched', arguments);
             return this;
         },
-        sorts:[],
+
         doPage:function (evt) {
             this.update('Loading page <b>' + evt.page + '</b> of {items}');
             return this;
