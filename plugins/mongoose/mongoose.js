@@ -303,8 +303,10 @@ MongoosePlugin.prototype.editorFor = function (path, p, Model) {
                 }
 
             } else {
-                if (path != 'id')
-                    console.log('No Type for [' + path + '] guessing String', p);
+                if (path != 'id') {
+                  // console.log('No Type for [' + path + '] guessing String', p);
+                }
+                    
                 defaults.schemaType = 'String';
             }
         }
