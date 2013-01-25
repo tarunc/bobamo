@@ -36,6 +36,19 @@ VisPlugin.prototype.routes = function () {
         var d = new Date(v._id)
         return {date:d.getFullYear()+'-'+ pad(d.getMonth()+1)+'-'+ pad(d.getDate()), count:v.value};
     }
+    
+    
+    var base = this.baseUrl;
+    if (this.options.index) {
+        app.get(this.pluginUrl + this.options.index, function (req, res, next) {
+            this.generate(res, 'index.html', {}, next);
+        }.bind(this))
+    }
+
+    app.get(this.pluginUrl, function (req, res, next) {
+        res.redirect(this.baseUrl + (this.options.index || 'index.html'));
+    }.bind(this));
+    
     app.get(this.pluginUrl + '/data/:type', function (req, res, next) {
         var interval = req.query.interval || 'day';
 
