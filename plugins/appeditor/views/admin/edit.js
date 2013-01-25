@@ -61,14 +61,9 @@ define([
                 title:'${appModel.title}',
                 description:'${appModel.description}',
                 version:'${appModel.version}',
-<<<<<<< HEAD
-                models:{{html JSON.stringify(Object.keys(appModel.modelPaths))}},
-                plugins:{{html pluginManager.pluginNames(true)}}
-=======
                 build:'${appModel.build}',
                 models:{{json Object.keys(appModel.modelPaths) }},
                 plugins:{{json pluginManager.pluginNames()}}
->>>>>>> 015354febcd2141c0d5401b40147c5d4b7ffcdf9
             });
         }
     });

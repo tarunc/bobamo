@@ -1,6 +1,8 @@
 var Plugin = require('../../lib/plugin-api'), path = require('path'), _u = require('underscore'),
     sutil = require('util'), LessFactory = require('./less-factory');
 var LessPlugin = function (options, app, name) {
+  this.__configured = false;
+  
     Plugin.apply(this, arguments);
 
     this._variables = {};
@@ -8,6 +10,11 @@ var LessPlugin = function (options, app, name) {
 }
 sutil.inherits(LessPlugin, Plugin);
 LessPlugin.prototype.configure = function (conf) {
+  if (this.__configured) {
+    return;
+  }
+  
+  this.__configured = true;
     _u.extend(this._variables, conf);
     var paths = [ path.join(this.path, 'less')];
     _u.each(this.pluginManager.plugins, function(v){
@@ -63,7 +70,10 @@ LessPlugin.prototype.editors = function () {
 }
 
 LessPlugin.prototype.filters = function () {
+  
     this.app.get(this.baseUrl + '*', function (req, res, next) {
+        this.configure();
+        
         if (_u.isFunction(res.local)) {
             res.local('lessFactory', this.lessFactory);
         } else {
@@ -78,6 +88,8 @@ LessPlugin.prototype.routes = function () {
     var base = this.pluginUrl;
     var app = this.app;
     app.get(base + '/:id?', function (req, res, next) {
+        this.configure();
+        
         res.contentType('text/css');
         this.lessFactory.current(function onCss(err, obj) {
             if (err) return next(err);
@@ -85,6 +97,8 @@ LessPlugin.prototype.routes = function () {
         }, req.params.id);
     }.bind(this));
     app.get(base + '/admin/:id?', function (req, res, next) {
+        this.configure();
+        
         var obj = _u.extend({}, this.lessFactory.getCache(req.params.id || req.body.id) || this._variables);
         delete obj.payload;
 
@@ -95,6 +109,8 @@ LessPlugin.prototype.routes = function () {
 
     }.bind(this));
     app.post(base + '/admin', function (req, res, next) {
+        this.configure();
+        
         delete req.body.variables;
         delete req.body.created;
         delete req.body.payload;
@@ -121,6 +137,8 @@ LessPlugin.prototype.routes = function () {
     }.bind(this));
 
     app.put(base + '/admin/:id?', function (req, res, next) {
+        this.configure();
+        
         delete req.body.variables;
         delete req.body.created;
         delete req.body.payload;
