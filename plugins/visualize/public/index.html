@@ -88,7 +88,7 @@
     require(['jquery', 'Backbone', 'visualize/backbone-d3/backbone-d3', 'visualize/backbone-d3/visualisations/calendar' ], function ($, Backbone,B3d, Calendar) {
         var UserCalendar = Calendar.Collection.extend({
 //            url:'/bobamo/visualize/examples/calendar.json'
-            url:'/bobamo/visualize/data/user',
+            url:'${baseUrl}visualize/data/user',
             parse:function (resp) {
                 return resp.payload
             }
