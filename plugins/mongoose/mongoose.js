@@ -123,7 +123,7 @@ MongoosePlugin.prototype.schemaFor = function (schema) {
 }
 MongoosePlugin.prototype.updateSchema = function (modelName, schema, callback) {
     var mschema = this.schemaFor(schema);
-    var model = this.options.mongoose.model(modelName, mschema);
+    var model = this.options.mongoose.model(modelName);
     model._configured = true;
     console.log('loading schema', modelName);
     if (callback)

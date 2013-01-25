@@ -68,184 +68,184 @@ define(['underscore'], function (_) {
 
         }
     }
-    validators.minlength = {
-        types:['String'],
-        name:'Mininum Length',
-        message:"Must be at least {{minlength}} charecters",
-        schema:{
-            minlength:{type:'Number'}
-        },
-        validator:function onMinLengthValidator(options) {
-            check(options, 'minlength');
-
-            options = _.extend({
-                type:'minlength',
-                message:this.message
-            }, options);
-            var val = parseInt(options.minlength);
-            return function onMinLength(value, attrs) {
-
-                //Don't check empty values (add a 'required' validator for this)
-                if (empty(value)) return;
-                if (val > fullTrim(value).length)
-                    return  {
-                        type:options.type,
-                        message:helpers.createTemplate(options.message, _.extend({value:value}, options))
-                    };
-            };
-        }
-    }
-    validators.maxlength = {
-        types:['String'],
-        name:'Maximum Length',
-        message:"Must be less than {{maxlength}} charecters",
-        schema:{
-            maxlength:{type:'Number'},
-            trim:{type:'Checkbox'}
-        },
-        validator:function onMaxLengthValidator(options) {
-            check(options, 'maxlength');
-
-            options = _.extend({
-                type:'maxlength',
-                message:this.errMessages.maxlength
-            }, options);
-            var val = parseInt(options.maxlength);
-            return function onMaxLength(value, attrs) {
-
-                //Don't check empty values (add a 'required' validator for this)
-                if (empty(value))
-                    return;
-
-                if (val < fullTrim(value).length) return {
-                    type:options.type,
-                    message:helpers.createTemplate(options.message, _.extend({value:value}, options))
-                };
-            };
-        }
-    };
-
-    validators.min = {
-        types:['Number'],
-        name:'Minimum',
-        message:"Must be more than {{min}}",
-        schema:{
-            min:{type:'Number'}
-        },
-        validator:function (options) {
-            check(options, 'min');
-            options = _.extend({
-                type:'min',
-                message:this.errMessages.min
-            }, options);
-            var val = parseFloat(options.min);
-            return function min(value, attrs) {
-
-                //Don't check empty values (add a 'required' validator for this)
-                if (empty(value)) return;
-                if (val > parseFloat(value))
-                    return  {
-                        type:options.type,
-                        message:helpers.createTemplate(options.message, _.extend({value:value}, options))
-                    };
-            };
-        }
-    }
-    validators.regexp = {
-        types:['String'],
-        name:'RegExp',
-        message:'Not a valid value',
-        schema:{
-            regexp:{type:'Text'}
-        },
-        validator:function(options){
-            check(options, 'regexp');
-            options = _.extend({
-                type:'regexp',
-                message:this.errMessages && this.errMessages.regexp
-            }, options);
-            var re = new RegExp(options.regexp);
-            return function regexp(value, attrs) {
-
-                //Don't check empty values (add a 'required' validator for this)
-                if (empty(value)) return;
-                if (re.text(value)) return {
-                    type:options.type,
-                    message:helpers.createTemplate(options.message, _.extend({value:value}, options))
-                };
-
-            };
-
-        }
-    }
-    validators.max = {
-        types:['Number'],
-        name:'Maximum',
-        message:"Must be less than {{max}}",
-        schema:{
-            max:{type:'Number'}
-        },
-        validator:function (options) {
-            check(options, 'max');
-
-            options = _.extend({
-                type:'max',
-                message:this.errMessages.max
-            }, options);
-
-            var val = parseFloat(options.max);
-            return function max(value, attrs) {
-
-                //Don't check empty values (add a 'required' validator for this)
-                if (empty(value)) return;
-                if (val < parseFloat(value)) return {
-                    type:options.type,
-                    message:helpers.createTemplate(options.message, _.extend({value:value}, options))
-                };
-
-            };
-        }
-    }
-    validators.required = {
-        name:'Required',
-        message:'Required',
-        validator:function (options) {
-
-            options = _.extend({
-                type:'required',
-                message:this.errMessages && this.errMessages.required
-            }, options);
-
-            return function (value) {
-                if (empty(value))
-                    return {
-                        type:options.type,
-                        message:helpers.createTemplate(options.message, options)
-                    };
-            }
-        }
-    }
-    validators.match = {
-        name:'Match',
-        message:'Does not match {{field}}',
-        schema:{
-            match:{type:'Text'}
-        },
-        validator:function (options, attrs) {
-            check(options, 'match');
-            return function (value) {
-                if (empty(value))
-                    return;
-
-                attrs = attrs || this;
-
-                if (value !== attrs[options.field]) return {
-                    type:options.type,
-                    message:Form.helpers.createTemplate(options.message, _.extend({value:value}, options))
-                };
-            }
-        }
-    }
+    // validators.minlength = {
+    //     types:['String'],
+    //     name:'Mininum Length',
+    //     message:"Must be at least {{minlength}} charecters",
+    //     schema:{
+    //         minlength:{type:'Number'}
+    //     },
+    //     validator:function onMinLengthValidator(options) {
+    //         check(options, 'minlength');
+    // 
+    //         options = _.extend({
+    //             type:'minlength',
+    //             message:this.message
+    //         }, options);
+    //         var val = parseInt(options.minlength);
+    //         return function onMinLength(value, attrs) {
+    // 
+    //             //Don't check empty values (add a 'required' validator for this)
+    //             if (empty(value)) return;
+    //             if (val > fullTrim(value).length)
+    //                 return  {
+    //                     type:options.type,
+    //                     message:helpers.createTemplate(options.message, _.extend({value:value}, options))
+    //                 };
+    //         };
+    //     }
+    // }
+    // validators.maxlength = {
+    //     types:['String'],
+    //     name:'Maximum Length',
+    //     message:"Must be less than {{maxlength}} charecters",
+    //     schema:{
+    //         maxlength:{type:'Number'},
+    //         trim:{type:'Checkbox'}
+    //     },
+    //     validator:function onMaxLengthValidator(options) {
+    //         check(options, 'maxlength');
+    // 
+    //         options = _.extend({
+    //             type:'maxlength',
+    //             message:this.errMessages.maxlength
+    //         }, options);
+    //         var val = parseInt(options.maxlength);
+    //         return function onMaxLength(value, attrs) {
+    // 
+    //             //Don't check empty values (add a 'required' validator for this)
+    //             if (empty(value))
+    //                 return;
+    // 
+    //             if (val < fullTrim(value).length) return {
+    //                 type:options.type,
+    //                 message:helpers.createTemplate(options.message, _.extend({value:value}, options))
+    //             };
+    //         };
+    //     }
+    // };
+    // 
+    // validators.min = {
+    //     types:['Number'],
+    //     name:'Minimum',
+    //     message:"Must be more than {{min}}",
+    //     schema:{
+    //         min:{type:'Number'}
+    //     },
+    //     validator:function (options) {
+    //         check(options, 'min');
+    //         options = _.extend({
+    //             type:'min',
+    //             message:this.errMessages.min
+    //         }, options);
+    //         var val = parseFloat(options.min);
+    //         return function min(value, attrs) {
+    // 
+    //             //Don't check empty values (add a 'required' validator for this)
+    //             if (empty(value)) return;
+    //             if (val > parseFloat(value))
+    //                 return  {
+    //                     type:options.type,
+    //                     message:helpers.createTemplate(options.message, _.extend({value:value}, options))
+    //                 };
+    //         };
+    //     }
+    // }
+    // validators.regexp = {
+    //     types:['String'],
+    //     name:'RegExp',
+    //     message:'Not a valid value',
+    //     schema:{
+    //         regexp:{type:'Text'}
+    //     },
+    //     validator:function(options){
+    //         check(options, 'regexp');
+    //         options = _.extend({
+    //             type:'regexp',
+    //             message:this.errMessages && this.errMessages.regexp
+    //         }, options);
+    //         var re = new RegExp(options.regexp);
+    //         return function regexp(value, attrs) {
+    // 
+    //             //Don't check empty values (add a 'required' validator for this)
+    //             if (empty(value)) return;
+    //             if (re.text(value)) return {
+    //                 type:options.type,
+    //                 message:helpers.createTemplate(options.message, _.extend({value:value}, options))
+    //             };
+    // 
+    //         };
+    // 
+    //     }
+    // }
+    // validators.max = {
+    //     types:['Number'],
+    //     name:'Maximum',
+    //     message:"Must be less than {{max}}",
+    //     schema:{
+    //         max:{type:'Number'}
+    //     },
+    //     validator:function (options) {
+    //         check(options, 'max');
+    // 
+    //         options = _.extend({
+    //             type:'max',
+    //             message:this.errMessages.max
+    //         }, options);
+    // 
+    //         var val = parseFloat(options.max);
+    //         return function max(value, attrs) {
+    // 
+    //             //Don't check empty values (add a 'required' validator for this)
+    //             if (empty(value)) return;
+    //             if (val < parseFloat(value)) return {
+    //                 type:options.type,
+    //                 message:helpers.createTemplate(options.message, _.extend({value:value}, options))
+    //             };
+    // 
+    //         };
+    //     }
+    // }
+    // validators.required = {
+    //     name:'Required',
+    //     message:'Required',
+    //     validator:function (options) {
+    // 
+    //         options = _.extend({
+    //             type:'required',
+    //             message:this.errMessages && this.errMessages.required
+    //         }, options);
+    // 
+    //         return function (value) {
+    //             if (empty(value))
+    //                 return {
+    //                     type:options.type,
+    //                     message:helpers.createTemplate(options.message, options)
+    //                 };
+    //         }
+    //     }
+    // }
+    // validators.match = {
+    //     name:'Match',
+    //     message:'Does not match {{field}}',
+    //     schema:{
+    //         match:{type:'Text'}
+    //     },
+    //     validator:function (options, attrs) {
+    //         check(options, 'match');
+    //         return function (value) {
+    //             if (empty(value))
+    //                 return;
+    // 
+    //             attrs = attrs || this;
+    // 
+    //             if (value !== attrs[options.field]) return {
+    //                 type:options.type,
+    //                 message:Form.helpers.createTemplate(options.message, _.extend({value:value}, options))
+    //             };
+    //         }
+    //     }
+    // }
 
     return {
         validators:validators,
