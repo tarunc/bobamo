@@ -38,7 +38,6 @@ VisPlugin.prototype.routes = function () {
     }
     
     
-    var base = this.baseUrl;
     if (this.options.index) {
         app.get(this.pluginUrl + this.options.index, function (req, res, next) {
             this.generate(res, 'index.html', {}, next);
@@ -46,7 +45,7 @@ VisPlugin.prototype.routes = function () {
     }
 
     app.get(this.pluginUrl, function (req, res, next) {
-        res.redirect(this.baseUrl + (this.options.index || 'index.html'));
+        res.redirect(this.pluginUrl + (this.options.index || 'index.html'));
     }.bind(this));
     
     app.get(this.pluginUrl + '/data/:type', function (req, res, next) {
