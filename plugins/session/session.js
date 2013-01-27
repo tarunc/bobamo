@@ -69,7 +69,7 @@ SessionPlugin.prototype.appModel = function () {
 
 SessionPlugin.prototype.filters = function () {
     this.app.all(this.baseUrl + '*', function (req, res, next) {
-        console.log('setting session');
+        // console.log('setting session');
         this.persist.session = req.session;
         next();
     }.bind(this));
