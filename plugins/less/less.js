@@ -65,9 +65,7 @@ LessPlugin.prototype.editors = function () {
 }
 
 LessPlugin.prototype.filters = function () {
-  console.log('run less');
     this.app.get(this.baseUrl + '*', function (req, res, next) {
-        console.log('run less1');
         //if (_u.isFunction(res.local)) {
         //    res.local('lessFactory', this.lessFactory);
         // } else {
