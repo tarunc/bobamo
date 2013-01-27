@@ -27,10 +27,12 @@ GeneratorPlugin.prototype.filters = function (options) {
             'options':options
         };
         if (_u.isFunction(res.local)) {
+            console.log('1');
             _u.each(locals, function (v, k) {
                 res.local(k, v);
             });
         } else {
+          console.log('2');
           _u.each(locals, function (v, k) {
               res.locals[k] = v;
           });
