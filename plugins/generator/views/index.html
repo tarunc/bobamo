@@ -20,7 +20,7 @@
         }
     </style>
     <link href='http://fonts.googleapis.com/css?family=Righteous' rel='stylesheet' type='text/css'>
-    <link href="${baseUrl}less/${(query && query.checksum) || (lessFactory && lessFactory.checksum) || ''}" rel="stylesheet">
+    <link href="${baseUrl}less/${query.checksum || (lessFactory && lessFactory.checksum) || ''}" rel="stylesheet">
     <link href="${baseUrl}css/styles.css" rel="stylesheet">
     <link href="${baseUrl}js/libs/table/jquery.sorter.css" rel="stylesheet">
     <link href="${baseUrl}js/libs/backbone-forms/templates/bootstrap.css" rel="stylesheet">
