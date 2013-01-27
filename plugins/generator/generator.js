@@ -11,7 +11,9 @@ module.exports = GeneratorPlugin;
 
 GeneratorPlugin.prototype.filters = function (options) {
     var apiPath = this.options.apiUri || this.baseUrl + 'rest';
+    console.log('Setting locals route');
     this.app.get(this.baseUrl + '*', function (req, res, next) {
+      console.log('Setting locals');
         var useAuth = req.isAuthenticated ? true : false;
         var locals = {
             'useAuthentication':useAuth,
