@@ -27,7 +27,7 @@ GeneratorPlugin.prototype.filters = function (options) {
         if (_u.isFunction(res.local)) {
             _u.each(locals, function (v, k) {
                 res.local(k, v);
-            })
+            });
         } else {
           _u.each(locals, function (v, k) {
               res.locals[k] = v;
