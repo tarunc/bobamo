@@ -8,7 +8,7 @@ var LessPlugin = function (options, app, name) {
     this._variables = {};
 
 }
-sutil.inherits(LessPlugin, Plugin);
+util.inherits(LessPlugin, Plugin);
 LessPlugin.prototype.configure = function (conf) {
   if (this.__configured) {
     return;
