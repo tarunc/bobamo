@@ -219,7 +219,7 @@ define(['jquery'], function ($) {
     }
 
     $.fn.paginate.defaults = {
-        limit:10,
+        limit:200,
         skip:0,
         total:0,
         btnTemplate:'<a class="btn"></a>',
