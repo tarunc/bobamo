@@ -29,7 +29,9 @@ GeneratorPlugin.prototype.filters = function (options) {
                 res.local(k, v);
             })
         } else {
-            _u.extend(res.locals, locals);
+          _u.each(locals, function (v, k) {
+              res.locals[k] = v;
+          });
         }
         next();
     }.bind(this));
