@@ -1,7 +1,6 @@
 var Plugin = require('../../lib/plugin-api'), path = require('path'), _u = require('underscore'),
     sutil = require('util'), LessFactory = require('./less-factory');
 var LessPlugin = function (options, app, name) {
-  this.__configured = false;
   
     Plugin.apply(this, arguments);
 
@@ -10,11 +9,7 @@ var LessPlugin = function (options, app, name) {
 }
 util.inherits(LessPlugin, Plugin);
 LessPlugin.prototype.configure = function (conf) {
-  if (this.__configured) {
-    return;
-  }
-  
-  this.__configured = true;
+
     _u.extend(this._variables, conf);
     var paths = [ path.join(this.path, 'less')];
     _u.each(this.pluginManager.plugins, function(v){
@@ -22,7 +17,7 @@ LessPlugin.prototype.configure = function (conf) {
             paths.push(path.join(v.path, 'less'));
     }, this);
 
-    if (!this.options.lessFactory)
+    if (!this.lessFactory)
         this.lessFactory = this.options.lessFactory = new LessFactory({
             paths: paths
         });

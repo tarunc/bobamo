@@ -32,7 +32,7 @@ GeneratorPlugin.prototype.filters = function (options) {
         //         res.local(k, v);
         //     });
         // } else {
-          console.log('2');
+          // console.log('2');
           _u.each(locals, function (v, k) {
               res.locals[k] = v;
           });
