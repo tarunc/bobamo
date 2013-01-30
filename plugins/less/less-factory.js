@@ -23,7 +23,7 @@ function CssFactory(options) {
         options.paths.forEach(function (dir) {
             if (fs.existsSync(dir))
                 fs.readdirSync(dir).forEach(function (f) {
-                    console.log('readdir', dir, f);
+                    // console.log('readdir', dir, f);
                     if (/\.less$/.test(f)) {
                         _default_imports.push(f);
                     }

@@ -39,35 +39,35 @@ define(['underscore'], function (_) {
         return (value === null || value === undefined || value === '')
     }
     var validators = {};
-    validators['enum'] = {
-        types:['String'],
-        name:'Enum',
-        message:"Must be an enumerated value: [{{enums}}]",
-        schema:{
-            enums:{type:'List'}
-        },
-        validator:function onEnumValidator(options) {
-            var e = options['enum'] || options['enums'];
-            if (!e) throw new Error('Missing required "field" options for "enum" validator');
-            var vals = _.isString(e) ? e.split(',') : e;
-            options = _.extend({
-                type:'enum',
-                message:validators.errMessages && validators.errMessages['enum'] || validators['enum'].message
-            }, options);
-            return function onEnum(value) {
-                //Don't check empty values (add a 'required' validator for this)
-                if (empty(value)) return;
-                if (!~vals.indexOf(value)) {
-
-                    return {
-                        type:options.type,
-                        message:helpers.createTemplate(options.message, _.extend({value:value, enums:vals}, options))
-                    }
-                }
-            }
-
-        }
-    }
+    // validators['enum'] = {
+    //     types:['String'],
+    //     name:'Enum',
+    //     message:"Must be an enumerated value: [{{enums}}]",
+    //     schema:{
+    //         enums:{type:'List'}
+    //     },
+    //     validator:function onEnumValidator(options) {
+    //         var e = options['enum'] || options['enums'];
+    //         if (!e) throw new Error('Missing required "field" options for "enum" validator');
+    //         var vals = _.isString(e) ? e.split(',') : e;
+    //         options = _.extend({
+    //             type:'enum',
+    //             message:validators.errMessages && validators.errMessages['enum'] || validators['enum'].message
+    //         }, options);
+    //         return function onEnum(value) {
+    //             //Don't check empty values (add a 'required' validator for this)
+    //             if (empty(value)) return;
+    //             if (!~vals.indexOf(value)) {
+    // 
+    //                 return {
+    //                     type:options.type,
+    //                     message:helpers.createTemplate(options.message, _.extend({value:value, enums:vals}, options))
+    //                 }
+    //             }
+    //         }
+    // 
+    //     }
+    // }
     // validators.minlength = {
     //     types:['String'],
     //     name:'Mininum Length',
