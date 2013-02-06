@@ -38,7 +38,7 @@ function CssFactory(options) {
         var vis = {};
         while (typeof vis[m.id] === 'undefined') {
             var p = path.join(path.dirname(m.filename), 'less');
-            if (path.existsSync(p)) {
+            if (fs.existsSync(p)) {
                 pt[p] = true;
             }
 
