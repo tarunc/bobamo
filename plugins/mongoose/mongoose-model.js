@@ -49,9 +49,8 @@ module.exports = function MModel(m, manager) {
     });
     this.__defineGetter__('finders', function(){
         return _u.filter(m.schema.statics, function (fn) {
-          return fn.name.indexOf('admin') == 0;
-        });
-
+          return fn.name && fn.name.indexOf('admin') >= 0;
+        }) || [];
     });
 
 }
