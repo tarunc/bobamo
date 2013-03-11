@@ -511,8 +511,7 @@ define(['underscore'], function (_) {
             }
         }
     }
->>>>>>> 35bf832a0d252bd1dac3ecbe26da3dccc4b9e877
-
+    // ended
     return {
         validators:validators,
         inject:function (bv) {
