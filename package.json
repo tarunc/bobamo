@@ -1,7 +1,7 @@
 {
   "name": "bobamo",
   "description": "A scaffoldless crud thing using bootstrap, passport, mongoose, backbone and jquery",
-  "version": "0.9.1rc2",
+  "version": "0.9.2",
   "private": true,
   "dependencies": {
     "jqtpl": "~2.0.12",
