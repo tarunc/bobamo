@@ -44,7 +44,6 @@ define(['underscore'], function (_) {
     }
 
     var validators = {};
-// <<<<<<< HEAD
     // validators['enum'] = {
     //     types:['String'],
     //     name:'Enum',
@@ -252,7 +251,6 @@ define(['underscore'], function (_) {
     //         }
     //     }
     // }
-// =======
     validators['enum'] = {
         types:['String'],
         name:'Enum',
