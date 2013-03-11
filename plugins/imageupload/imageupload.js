@@ -31,8 +31,8 @@ var options = {
         }
     ],
     paths:{
-        convert:'/usr/local/bin/convert',
-        identify:'/usr/local/bin/identity'
+        convert:'convert',
+        identify:'identify'
     }
 };
 var ImageUploadPlugin = module.exports = function () {
