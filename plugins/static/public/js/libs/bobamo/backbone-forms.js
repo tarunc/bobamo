@@ -23,6 +23,7 @@ define(['Backbone.FormOrig', 'underscore', 'libs/util/inflection',
         });
     })
     var editors = Form.editors;
+    Form.editors.String = Form.editors.Text;
     var helpers = Form.helpers;
     /**
      * Trying to maintain some consistency and stuff.
@@ -72,6 +73,14 @@ define(['Backbone.FormOrig', 'underscore', 'libs/util/inflection',
         }
     };
 
+    var setOptions = editors.Select.prototype.setOptions;
+    editors.Select.prototype.setOptions = function(options){
+        if (options instanceof Backbone.Collection) {
+            if (this.schema.refresh)
+                options.reset();
+        }
+        setOptions.call(this, options);
+    }
     //Monkey Patch select so that we can get the bobamo functionality.
     // maybe one day I will submit a patch.
     editors.Select.prototype.initialize = function (options) {
@@ -79,6 +88,8 @@ define(['Backbone.FormOrig', 'underscore', 'libs/util/inflection',
 
         if (!this.schema || !(this.schema.options || this.schema.url || this.schema.ref || this.schema.collection))
             throw "Missing required 'schema.options' or 'schema.url' or 'schema.ref' or 'schema.collection'";
+        if (this.schema.prependOptions)
+            this.prependOptions = this.schema.prependOptions;
 
         if (this.schema.collection) {
             if (_.isString(this.schema.collection))
@@ -87,9 +98,24 @@ define(['Backbone.FormOrig', 'underscore', 'libs/util/inflection',
                 this.setOptions(this.schema.collection);
         } else if (this.schema.ref) {
             require(['collections/' + this.schema.ref], _.bind(this.setOptions, this));
+        } else if (this.schema.url){
+            var url = this.schema.url;
+            this.setOptions(function(cb){
+                $.ajax({
+                    url:url,
+                    success:function(resp){
+                        resp.payload.push({
+                            label:'None',
+                            val:""
+                        })
+                        cb(resp.payload);
+                    }
+                })
+            });
         }
         return this;
     };
+    editors.Select
     var init = editors.Text.prototype.initialize;
     //Add place holder support for values that subclass Text, ie. Number.
     editors.Text.prototype.initialize = function () {
@@ -150,7 +176,7 @@ define(['Backbone.FormOrig', 'underscore', 'libs/util/inflection',
             //Replace the generated wrapper tag
             this.setElement($field);
             this.editor = editor;
-            this.trigger('render');
+            this.trigger('editor-render');
         }, this));
 
         return this;
@@ -188,6 +214,7 @@ define(['Backbone.FormOrig', 'underscore', 'libs/util/inflection',
 
             if (this.hasFocus) this.trigger('blur', this);
             this.trigger('render');
+
 
         },this), function () {
             console.log('oops errors', arguments);
@@ -245,7 +272,7 @@ define(['Backbone.FormOrig', 'underscore', 'libs/util/inflection',
             wait.push(d)
             //Create the field
             self.createField(key, itemSchema, function (field) {
-                field.on('render', _.bind(function () {
+                field.on('editor-render', _.bind(function () {
                     //Render the fields with editors, apart from Hidden fields
                     var fieldEl = field.el;
 
@@ -284,7 +311,7 @@ define(['Backbone.FormOrig', 'underscore', 'libs/util/inflection',
                     self.fields[key] = field;
                     d.resolve(field);
                 }), this);
-                    field.render();
+                field.render();
             });
         });
 
@@ -316,5 +343,49 @@ define(['Backbone.FormOrig', 'underscore', 'libs/util/inflection',
 
         callback.call(this, new Form.Field(options));
     };
+    //Make Object renderer uses the render callback like the others.
+    editors.Object.prototype.render = function(){
+        //Create the nested form
+        this.form = new Form({
+            schema: this.schema.subSchema,
+            data: this.value,
+            idPrefix: this.id + '_',
+            fieldTemplate: 'nestedField'
+        });
+
+        this._observeFormEvents();
+        this.form.on('render', function onObjectFormRender(){
+            this.$el.html(this.form.el);
+            if (this.hasFocus) this.trigger('blur', this);
+        }, this);
+        this.form.render();
+        return this;
+    }
+    editors.NestedModel.prototype.render = function(){
+        var data = this.value || {},
+            key = this.key,
+            nestedModel = this.schema.model;
+
+        //Wrap the data in a model if it isn't already a model instance
+        var modelInstance = (data.constructor === nestedModel) ? data : new nestedModel(data);
+        var opts = {
+            model: modelInstance,
+            idPrefix: this.id + '_',
+            fieldTemplate: 'nestedField'
+        }
+        this.form = modelInstance&& modelInstance.createForm ? modelInstance.createForm(opts) : new Form(opts);
+
+        this._observeFormEvents();
+        this.form.on('render', function onNestedFormRender(){
+            this.$el.html(this.form.el);
+
+            if (this.hasFocus) this.trigger('blur', this);
+
+        }, this);
+        this.form.render();
+        //Render form
+
+        return this;
+    }
     return Form;
 })

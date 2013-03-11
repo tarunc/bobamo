@@ -16,28 +16,19 @@ module.exports = function MModel(m, manager) {
     });
 
     var display = util.depth(m, ['schema', 'options', 'display'], {});
-    this.fields = display.fields;
-    this.list_fields = display.list_fields;
-    this.edit_fields = display.edit_fields;
-    this.labelAttr = display.labelAttr;
-    this.fieldsets = display.fieldsets;
     this.all_fields = [];
-    this.__defineGetter__('list_fields', function(){
-        if (display.list_fields)
-            return display.list_fields;
-
-    });
-    var defaults = {};
+    var defaults = this.defaults || (this.defaults = {});
     Object.keys(m.schema.tree).forEach(function(k) {
         var d = m.schema.tree[k].default;
-        if (typeof d === 'undefined') return;
+        if (typeof d === 'undefined' || !d) return;
         defaults[k] = d;
     });
-    this.defaults = defaults;
 
     this.__defineGetter__('schema', function () {
         var ret = {};
         _u.each(m.schema.tree, function (v,k) {
+            if (!k || k === 'undefined' || (k == 'id' && m.schema.virtualpath(k)) )
+                return;
             ret[k] = new MField(k, manager.pluginFor(k, v, m, this));
         }, this);
 
@@ -52,5 +43,10 @@ module.exports = function MModel(m, manager) {
           return fn.name && fn.name.indexOf('admin') >= 0;
         }) || [];
     });
+    //copy display properties over without stepping on anything, should do some more special stuff but for now.
+    Object.keys(display).filter(function (v) {
+        if (!this.hasOwnProperty(v))
+            this[v] = display[v];
+    }, this);
 
 }

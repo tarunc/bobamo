@@ -2,7 +2,7 @@ define(['Backbone.Form','underscore'], function(Form, _){
 "use strict";
     var editors = Form.editors;
     var Text = editors.Text;
-
+    var reFilter = /^\/|\/$/g;
     var FilterText = editors.FilterText = Text.extend({
         events:_.extend({},Text.prototype.events, {'keypress':'onKeyPress'}),
         onKeyPress:function(){
@@ -36,7 +36,13 @@ define(['Backbone.Form','underscore'], function(Form, _){
            if (!(options.schema && options.schema.filter)){
                throw "Required attribute 'filter' is missing";
            }
-           this.filter = _.isString(options.schema.filter) ? new RegExp(options.schema.filter) :  options.schema.filter;
+           if (_.isString(options.schema.filter)){
+               var f = options.schema.filter.replace(reFilter, '')
+               if (f == '*') f = '.*'
+               this.filter = new RegExp(f);
+           }else{
+               this.filter = options.schema.filter;
+           }
 
 
         }

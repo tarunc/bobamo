@@ -1,6 +1,6 @@
 var bobamo = require('../../index'),
     swagger = require('./genschema'),
-
+    gen_resource = require('./genresource'),
     express = bobamo.expressApi,
     Model = bobamo.DisplayModel,
     path = require('path'),
@@ -8,14 +8,11 @@ var bobamo = require('../../index'),
     SwaggerToMarkdown = require('./genmarkdown'),
     generateClient = require('./generate-client'),
     u = require('../../lib/util'), _u = require('underscore'),
-    Spec = require('./Spec'),
-    Finder = bobamo.FinderModel,
     PluginApi = bobamo.PluginApi, util = require('util');
 
 var JsonSchemaPlugin = function () {
     PluginApi.apply(this, arguments);
     this.conf = {
- //       url:'http://localhost:3001/',
         scala:process.env['SCALA_HOME'],
         java:process.env['JAVA_HOME'] || '/System/Library/Frameworks/JavaVM.framework/Versions/CurrentJDK/Home',
         java_opts:process.env['JAVA_OPTS'] || ' -XX:MaxPermSize=256M -Xmx1024M -DloggerPath=conf/log4j.properties',
@@ -48,6 +45,10 @@ JsonSchemaPlugin.prototype.appModel = function () {
                 'jsonschema':{
                     label:'Service API Documentation ',
                     href:'#jsonschema/view/doc'
+                },
+                'jsonschema-doc':{
+                    label:'Service Edit Documentation ',
+                    href:'#jsonschema/view/markdown'
                 },
                 'jsonschema-conf':{
                     label:'Service API Configuration ',
@@ -111,37 +112,6 @@ JsonSchemaPlugin.prototype.admin = function () {
 }
 
 var docRe = /^document-(.*)/;
-/*<option value='document-native'>native</option>
- <option value='document-json'>json</option>
- <option value='document-html'>html</option>
- <option value='document-html5'>html5</option>
- <option value='document-html+lhs'>html+lhs</option>
- <option value='document-html5+lhs'>html5+lhs</option>
- <option value='document-s5'>s5</option>
- <option value='document-slidy'>slidy</option>
- <option value='document-slideous'>slideous</option>
- <option value='document-dzslides'>dzslides</option>
- <option value='document-docbook'>docbook</option>
- <option value='document-opendocument'>opendocument</option>
- <option value='document-latex'>latex</option>
- <option value='document-latex+lhs'>latex+lhs</option>
- <option value='document-beamer'>beamer</option>
- <option value='document-beamer+lhs'>beamer+lhs</option>
- <option value='document-context'>context</option>
- <option value='document-texinfo'>texinfo</option>
- <option value='document-man'>man</option>
- <option value='document-markdown'>markdown</option>
- <option value='document-markdown+lhs'>markdown+lhs</option>
- <option value='document-plain'>plain</option>
- <option value='document-rst'>rst</option>
- <option value='document-rst+lhs'>rst+lhs</option>
- <option value='document-mediawiki'>mediawiki</option>
- <option value='document-textile'>textile</option>
- <option value='document-rtf'>rtf</option>
- <option value='document-org'>org</option>
- <option value='document-asciidoc'>asciidoc</option>
- <option value='document-odt'>odt</option>
- <option value='document-docx'>docx</option>*/
 var extensionMap = JsonSchemaPlugin.prototype.extensionMap = {
     'html5':{
         ext:'html',
@@ -273,119 +243,56 @@ JsonSchemaPlugin.prototype.configure = function (conf) {
     _u.extend(this.conf, conf);
     this.swaggerUrl();
 }
-var typeRe =/List\[([^\]]*)\]/;
-var builtin_types = 'byte boolean int long float double string Date void'.split(' ');
-
-JsonSchemaPlugin.prototype.resourceMap = function(arr){
-    var doc = {
-        apiVersion:this.pluginManager.appModel.version,
-        swaggerVersion:"1.1",
-        basePath:swagUrl+"/api-docs/",
-        apis:[]
-    }
-    doc.apis = _u.map(this.pluginManager.appModel.modelPaths, function (v, k) {
-        return {
-            path: k,
-            description:v.description || v.help || ''
-        }
-    });
-}
 JsonSchemaPlugin.prototype.resource = function (modelName) {
-    var swagUrl = this.swaggerUrl();
-    var doc = {
-        apiVersion:this.pluginManager.appModel.version,
-        swaggerVersion:"1.1",
-        basePath:swagUrl+"/api-docs/",
-        apis:[]
+    var appModel =this.pluginManager.appModel;
+    var version = appModel.version, swagUrl = this.swaggerUrl();
+    if (modelName){
+//        var model = this.pluginManager.appModel
+        var doc = gen_resource.resourceFor(appModel.modelFor(modelName),swagUrl, version, function(mName){
+           return _u.isString(mName) ? appModel.modelFor(mName) : mName;
+        }.bind(this));
+    }else{
+        var doc = gen_resource.resources(appModel.modelPaths, swagUrl, version);
     }
-    if (!modelName) {
-        doc.apis = _u.map(this.pluginManager.appModel.modelPaths, function (v, k) {
-            return {
-                path:"/"+ k,
-                description:v.description || v.help || ''
-            }
-        });
-    } else {
-        var model = this.pluginManager.appModel.modelPaths[modelName];
-        if (!model) {
-            console.log('modelPaths', this.pluginManager.appModel.modelPaths)
-            return res.send({status:1, message:'Could not locate model ' + modelName})
-
-        }
-        var self = this;
-        var ops = {};
-        doc.models = {};
-        _u.each(_u.flatten([
-            swagger.all(model, modelName),
-            swagger.one(model, modelName),
-            swagger.post(model, modelName),
-            swagger.put(model, modelName),
-            swagger.del(model, modelName),
-            swagger.finders(model, modelName)
-
-        ]), function forEachOperation(ret) {
-            _u.extend({
-                httpMethod:'GET'
-            }, ret)
-            var restPath = ['/', modelName, (ret.path ? '/' + ret.path : '')].join('');
-            _u.each(ret.parameters, function (v) {
-                if (v.paramType == 'path') {
-                    restPath += '/{' + v.name + '}'
-                }else if (v.paramType == 'body'){
-                    var pType = v.dataType && v.dataType.replace(typeRe, "$1");
-                    if (!~builtin_types.indexOf(pType) ){
-                        if (!doc.models[pType]){
-                            doc.models[pType] = self.modelToSchema(v.dataTypeModel,doc.models);
-                            delete v.dataTypeModel;
-                        }
-                    }
-                }
-            });
-            var rName = ret.responseClass.replace(typeRe, "$1");
-
-            if (!~builtin_types.indexOf(rName)) {
-                if (!doc.models[rName]) {
-                    doc.models[rName] = self.modelToSchema(ret.responseModel || rName,  doc.models);
-                    doc.models[rName].id = rName;
-                }
-            }
-            function resolve(){
-               Object.keys(doc.models).filter(function(v){ return !doc.models[v]}).forEach(function(k){
-                    doc.models[k] = self.modelToSchema(k, doc.models);
-                   doc.models[k].id = k;
-                   resolve();
-               });
-            }
-            resolve();
-
-            (ops[restPath] || (ops[restPath] = [])).push(_u.omit(ret, 'responseModel'));
-
-        });
-
-        doc.apis = _u.map(ops, function (v, k) {
-            return {
-                path:k,
-                operations:v,
-                description:'Operations about ' + modelName
-            };
-        });
-
-        doc.resourcePath = '/' + modelName;
-    }
-//        res.send(doc);
     return doc;
 }
 JsonSchemaPlugin.prototype.markdown = function () {
+    var appModel = this.pluginManager.appModel;
     return new SwaggerToMarkdown({
         apiname:this.pluginManager.appModel.title,
         basePath:this.swaggerUrl(),
         resourcefile:this.resource(),
-        authors:this.pluginManager.appModel.authors,
-        modified:this.pluginManager.appModel.modified? new Date(this.pluginManager.appModel.modified) : new Date(),
-        specifications:Object.keys(this.pluginManager.appModel.modelPaths).map(this.resource, this)
+        authors:appModel.authors,
+        revisions:appModel.revisions,
+        modified:appModel.modified? new Date(appModel.modified) : new Date(),
+        specifications:Object.keys(appModel.modelPaths).map(this.resource, this)
     }).print();
 }
 JsonSchemaPlugin.prototype.routes = function () {
+    this.app.get(this.pluginUrl+'/meta/service', function(req,res){
+        var appModel = this.pluginManager.appModel;
+        var resources = _u.flatten(_u.flatten(Object.keys(appModel.modelPaths).map(this.resource, this).map(function(v){
+            return v.apis;
+        })).map(function(v){
+                console.log(v);
+                var path = v.path;
+                var fp = (((path[0] == '/' ) ? path.substring(1) : path).split('/')).shift();
+
+                return v.operations.map(function(v){
+                    var val = v.httpMethod+'['+ fp+'.'+v.nickname +']';
+                    return {
+                        label:v.nickname+' ['+v.httpMethod+' '+path+']',
+                        val:val
+                    }
+                })
+         }));
+
+        res.send({
+            status:0,
+            payload:resources
+        })
+
+    }.bind(this));
 
 
     var resource = function (req, res, next) {
@@ -395,6 +302,7 @@ JsonSchemaPlugin.prototype.routes = function () {
         res.setHeader('Content-Type', 'application/markdown');
         res.send(this.markdown());
     }.bind(this));
+
     this.app.get(this.pluginUrl + '/api/resources.:format', resource);
     this.app.get(this.pluginUrl + '/api-docs.:format?/:type?', resource);
     this.app.get(this.pluginUrl + '/api/api-docs.:format?/:type?', resource);
@@ -403,16 +311,8 @@ JsonSchemaPlugin.prototype.routes = function () {
         console.log('rest', req.url);
         next();
     }.bind(this));
-//    this.app.get(this.pluginUrl + '/doc/:type', function (req, res, next) {
-//        var type = req.params.type;
-//        var jsonSchema = this.modelToSchema(type);
-//        this.generate(res, 'view/model.html', {jsonSchema:jsonSchema, model:this.pluginManager.modelPaths[type]});
-//    }.bind(this));
+
     PluginApi.prototype.routes.apply(this, arguments);
 }
-;
-Finder.prototype.__defineGetter__('spec', function () {
-    return new Spec([this.display.spec], this)
-});
 
 module.exports = JsonSchemaPlugin;

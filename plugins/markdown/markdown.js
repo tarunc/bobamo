@@ -6,9 +6,44 @@ var Markdown = function(){
 u.inherits(Markdown, PluginApi);
 
 Markdown.prototype.routes = function(){
+    this.app.post(this.pluginUrl+'/preview', function(req,res,next){
+        try {
+        var marked = require('marked');
+        }catch(e){
+            res.send('<html><body><h2>Please run npm install in the markdown directory for preview to work</h2></body></html>')
+        }
+        res.send(marked(req.body.data, {
+            gfm: true,
+            tables: true,
+            breaks: false,
+            pedantic: false,
+            sanitize: true,
+            smartLists: true,
+
+            langPrefix: 'language-',
+            highlight: function(code, lang) {
+                if (lang === 'js') {
+                    return highlighter.javascript(code);
+                }
+                return code;
+            }
+        }));
+    });
     PluginApi.prototype.routes.apply(this, arguments);
 }
-
+Markdown.prototype.renderers = function(){
+    return  [
+        {
+            name:'Markdown',
+            types:['String'],
+            description:"Settings for markdown fields",
+            schema:{
+                showRendered:{ type:'Checkbox' },
+                allowEdit:{type:'Checkbox'}
+            }
+        }
+        ]
+}
 Markdown.prototype.editors = function () {
     return [
         {

@@ -7,6 +7,7 @@ function $titlelize(str) {
             }).join(' ');
     }).join(' ')
 }
+var moment = require('moment');
 
 module.exports = function SwaggerToMarkdown(options) {
     var resources = options.resourcefile;
@@ -297,19 +298,29 @@ module.exports = function SwaggerToMarkdown(options) {
 
         f.$write(this.$build_markdown_header(api_name + ' Service Contract', 1));
         f.$write(this.$build_markdown_header('About', 2));
-        f.$write('<table><tbody><tr><td>Authors</td><td>' + (options.authors ? options.authors.join(', ') : '' ) + '</td></tr>' +
-            '<tr><td>Version</td><td>' + api_version + '</td></tr>');
+        f.$write('<table><thead>' +
+            '<tr><th colspan="3">Authors: ' + (options.authors ? options.authors.join(', ') : '' ) + '</th></tr>' +
+            '<tr><th>Date</th><th>Version</th><th>Notes</th></tr></thead><tbody>');
 
         if (options.modified) {
-            var moment = require('moment');
-            f.$write('<tr><td>Date</td><td>' + moment(options.modified).format("MM/DD/YYYY") + '</td></tr>');
+            f.$write('<tr><td>' + moment(options.modified).format("MM/DD/YYYY") + '</td><td>'+api_version+'</td><td>'+(options.description || 'current api')+'</td></tr>');
+        }
+        if (options.revisions){
+            options.revisions.forEach(function(v,k){
+                f.$write('<tr><td>' + moment(new Date(v.modified)).format("MM/DD/YYYY") + '</td><td>'+
+                    v.version
+                    +'</td><td>' +
+                    (v.description || '')
+                    +'</td></tr>');
+
+            });
         }
         f.$write('</tbody></table>');
         f.$write("\n\n");
         f.$write(this.$build_markdown_header("High-level Service Design", 2));
         f.$writeln('All services are designed as RESTful HTTP services. JSON is used as the transport format for all request/response bodies.' +
             'Although the service design at this point is intended to support no more beyond the scope of ' + options.apiname);
-
+        f.$writeln("\n")
         f.$write(this.$build_markdown_header("JSON Schema", 2));
         f.$writeln('The content of JSON request/response are specified as [JSON Schemas](http://json-schema.org/latest/json-schema-core.html). JSON Schema is to JSON as XML Schema is to XML, effectively a formal content for a documents structure expressed in the format itself. JSON Schema lends itself to being easily human readable which can significantly help with services design discussions.       The service contracts expressed in this document use version 4 of the JSON schema draft. There are a number of validators available for Java, Node and Ruby.\n')
 

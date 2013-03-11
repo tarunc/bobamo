@@ -1,4 +1,23 @@
-var DataTypes = require('./data-types')
+var DataTypes = require('./data-types'), _u = require('underscore');
+var SelectOpts = {
+    options:{
+        type:'List',
+        help:'A list of options, A, B, C... mutually exclusive with collection and url'
+    },
+    collection:{
+        type:'String',
+        help:'the path to a collection to use to populate'
+    },
+    url:{
+        type:'String',
+        help:'A url to pull the response from expecting it in [{label:label, val:val}] format'
+    },
+    refresh:{
+        type:'Checkbox',
+        help:'Refresh the select list with every render'
+    }
+}
+
 module.exports = [
     {
         name:'Text',
@@ -14,25 +33,27 @@ module.exports = [
         types:['String', 'Boolean', 'Number', 'Date'],
         schema:{
             placeholder:{ type:'Text' },
-            dataType:{ type:'Select', options:DataTypes.String},
             filter:{
-                type:'Text',
+                type:'FilterTextConfigEditor',
                 help:'A regular expression to match against'
+            },
+            dataType:{ type:'Select', options:DataTypes.String}
 
-            }
         }
+        //,fields:['filter', 'placeholder', 'dataType']
 
     },
     {
-        name:'TypeAhead',
-        types:['String', 'Number', 'Date'],
+        name:'Integer',
+        types:[ 'Number'],
         schema:{
-            placeholder:{ type:'Text' },
-            dataType:{ type:'Select', options:DataTypes.String},
-            options:{
-                type:'List'
-            }
+            placeholder:{ type:'Text' }
         }
+    },
+    {
+        name:'TypeAhead',
+        types:['String'],
+        schema:_u.extend({placeholder:{ type:'Text' }},SelectOpts)
     },
     {
         name:'TextArea',
@@ -91,24 +112,25 @@ module.exports = [
     {
         name:'Select',
         types:['String'],
-        schema:{
-            options:{
-                type:'List',
-                help:'A list of options, A, B, C...'
-            }
-        }
+        schema:SelectOpts
+
     },
     {
         name:'MultiEditor',
         types:[ 'ObjectId'],
+        schema:SelectOpts
+
+    },
+    {
+        name:'TokenEditor',
+        types:['ObjectId'],
         schema:{
-            ref:{
-                type:'MultiEditor',
-                collection:'views/modeleditor/admin/schema-collection',
-                multiple:false
-            },
-            multiple:{
-                type:'Checkbox'
+            url:{
+                type:'Text',
+                help:'By default token editor will query and filter on whatever is labelAttr, use this' +
+                    ' to use a different rest url for this, the id of the parent object will be passed as ' +
+                    ' an attribute _id',
+                placeholder:'/rest/{ref}?transform=labelval&limit=10&_id={id}'
             }
         }
     },
